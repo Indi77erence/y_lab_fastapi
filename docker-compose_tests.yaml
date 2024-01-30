@@ -1,0 +1,43 @@
+version: '3.0'
+services:
+  api_test:
+    build: .
+    container_name: api_test
+    command: >
+      sh -c "pytest"
+    depends_on:
+      - postgres_test
+    networks:
+      - test
+    env_file:
+      - .env
+
+
+  postgres_test:
+    image: postgres:15.1-alpine
+    container_name: 'postgres_test'
+    restart: always
+    environment:
+      PGUSER: ${DB_USER_TEST}
+      POSTGRES_USER: ${DB_USER_TEST}
+      POSTGRES_PASSWORD: ${DB_PASS_TEST}
+      POSTGRES_DB: ${DB_NAME_TEST}
+
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    networks:
+      - test
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-U", "${DB_USER_TEST}", "-d", "${DB_HOST_TEST}" ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+networks:
+  custom:
+    driver: bridge
+  test:
+    driver: bridge
