@@ -6,7 +6,8 @@ services:
     command: >
       sh -c "alembic revision --autogenerate && alembic upgrade head && pytest"
     depends_on:
-      - postgres_test
+      postgres_test:
+        condition: service_healthy
     networks:
       - test
     env_file:
