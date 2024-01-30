@@ -1,6 +1,9 @@
 import os
 import sys
 from logging.config import fileConfig
+from src.menu.models import metadata
+from src.submenu.models import metadata
+from src.dish.models import metadata
 from src.database import metadata
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
