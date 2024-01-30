@@ -6,7 +6,6 @@ script_dir = os.path.dirname(current_file)
 parent_dir = os.path.dirname(script_dir)
 y_lab_fastapi_dir = os.path.join(parent_dir, '..')
 sys.path.append(y_lab_fastapi_dir)
-
 from logging.config import fileConfig
 from src.menu.models import metadata
 from src.submenu.models import metadata
