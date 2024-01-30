@@ -2,7 +2,7 @@ import sys
 
 import pytest_asyncio
 
-sys.path.append("")
+sys.path.append("..")
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from src.config import DB_USER_TEST, DB_PASS_TEST, DB_HOST_TEST, DB_PORT_TEST, DB_NAME_TEST

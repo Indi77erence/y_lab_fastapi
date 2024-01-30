@@ -1,10 +1,10 @@
-version: '3.0'
+version: '3.8'
 services:
   api_test:
     build: .
     container_name: api_test
     command: >
-      sh -c "alembic revision --autogenerate && alembic upgrade head && pytest"
+      sh -c "cd tests && alembic upgrade head && pytest"
     depends_on:
       postgres_test:
         condition: service_healthy
