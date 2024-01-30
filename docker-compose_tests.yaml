@@ -4,7 +4,7 @@ services:
     build: .
     container_name: api_test
     command: >
-      sh -c "pytest"
+      sh -c "alembic revision --autogenerate && alembic upgrade head && pytest"
     depends_on:
       - postgres_test
     networks:
