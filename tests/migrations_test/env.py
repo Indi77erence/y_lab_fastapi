@@ -24,6 +24,7 @@ config = context.config
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 
+
 section = config.config_ini_section
 config.set_section_option(section, "DB_HOST_TEST", DB_HOST_TEST)
 config.set_section_option(section, "DB_PORT_TEST", DB_PORT_TEST)
