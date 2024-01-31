@@ -72,14 +72,19 @@ async def test_get_update_menu_by_id(ac: AsyncClient, id_menu: uuid.UUID):
 		assert field in answer_response, f"В меню нет поля {field}."
 
 
-async def test_delete_menu_by_id(ac: AsyncClient, id_menu: uuid.UUID, saved_data: dict):
+async def test_delete_menu_by_id(ac: AsyncClient, id_menu: uuid.UUID):
 	"""Проверка на удаление меню по id."""
 	response = await ac.delete(f"/api/v1/menus/{id_menu}")
 	answer_response = response.json()
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
 	assert answer_response["status"] == data_for_delete_menu["status"], "Статус меню не изменился"
 	assert answer_response["message"] == data_for_delete_menu["message"], "Сообщение о удалении неверное"
-	saved_data["menu_id"] = id_menu
+	"""Проверка на получение меню по id после его удаления."""
+	response = await ac.get(f"/api/v1/menus/{id_menu}")
+	answer_response = response.json()
+	assert response.status_code == HTTPStatus.NOT_FOUND, "Статус ответа не 404."
+	assert answer_response["detail"] == "menu not found", "Сообщение об ошибке не соответствует ожидаемому"
+
 
 
 async def test_get_empty_list_menu_after_remove(ac: AsyncClient):
@@ -89,13 +94,7 @@ async def test_get_empty_list_menu_after_remove(ac: AsyncClient):
 	assert response.json() == [], "Список меню не пуст."
 
 
-async def test_get_menu_by_id_after_remove(ac: AsyncClient, saved_data: dict):
-	"""Проверка на получение меню по id после его удаления."""
-	id_menu = saved_data["menu_id"]
-	response = await ac.get(f"/api/v1/menus/{id_menu}")
-	answer_response = response.json()
-	assert response.status_code == HTTPStatus.NOT_FOUND, "Статус ответа не 404."
-	assert answer_response["detail"] == "menu not found", "Сообщение об ошибке не соответствует ожидаемому"
+
 
 
 

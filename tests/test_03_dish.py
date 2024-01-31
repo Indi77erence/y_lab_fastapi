@@ -99,15 +99,19 @@ async def test_get_dish_by_id_after_update(ac: AsyncClient, id_menu: uuid.UUID, 
 		assert field in answer_response, f"В блюде нет поля {field}."
 
 
-async def test_delete_dish_by_id(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID, id_dish: uuid.UUID,
-								 saved_data: dict):
+async def test_delete_dish_by_id(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID, id_dish: uuid.UUID):
 	"""Проверка на удаление блюда по id."""
 	response = await ac.delete(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}/dishes/{id_dish}")
 	answer_response = response.json()
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
 	assert answer_response["status"] == data_for_delete_dish["status"], "Статус удаления не соответствует заданному"
 	assert answer_response["message"] == data_for_delete_dish["message"], "Блюдо не удалилось"
-	saved_data['id_dish'] = id_dish
+
+	"""Проверка на получение блюда по id после удаления."""
+	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}/dishes/{id_dish}")
+	answer_response = response.json()
+	assert response.status_code == HTTPStatus.NOT_FOUND, "Статус ответа не 404."
+	assert answer_response["detail"] == "dish not found", "Сообщение об ошибке не соответствует ожидаемому"
 
 
 async def test_get_empty_list_dishes_after_delete(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID):
@@ -115,16 +119,6 @@ async def test_get_empty_list_dishes_after_delete(ac: AsyncClient, id_menu: uuid
 	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}/dishes")
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
 	assert response.json() == [], "Список блюд не пуст."
-
-
-async def test_get_dish_by_id_after_delete(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID,
-										   saved_data: dict):
-	"""Проверка на получение блюда по id после удаления."""
-	id_dish = saved_data["id_dish"]
-	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}/dishes/{id_dish}")
-	answer_response = response.json()
-	assert response.status_code == HTTPStatus.NOT_FOUND, "Статус ответа не 404."
-	assert answer_response["detail"] == "dish not found", "Сообщение об ошибке не соответствует ожидаемому"
 
 
 async def test_delete_submenu_by_id(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID):

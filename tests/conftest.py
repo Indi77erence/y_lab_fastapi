@@ -64,8 +64,3 @@ async def id_dish():
 	async with async_session_maker_test() as session:
 		return await session.scalar(select(dish_tbl))
 
-
-@pytest_asyncio.fixture(scope='module')
-def saved_data() -> dict[str, Any]:
-	"""Фикстура для сохранения объектов тестирования."""
-	return {}

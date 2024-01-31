@@ -83,14 +83,19 @@ async def test_get_submenu_by_id_after_update(ac: AsyncClient, id_menu: uuid.UUI
 		assert field in answer_response, f"В меню нет поля {field}."
 
 
-async def test_delete_submenu_by_id(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID, saved_data: dict):
+async def test_delete_submenu_by_id(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID):
 	"""Проверка на удаление подменю по id."""
 	response = await ac.delete(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}")
 	answer_response = response.json()
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
 	assert answer_response["status"] == data_for_delete_submenu["status"], "Статус подменю не изменился"
 	assert answer_response["message"] == data_for_delete_submenu["message"], "Подменю не удалилось"
-	saved_data["submenu_id"] = id_submenu
+
+	"""Проверка на получение подменю по id после его удаления."""
+	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}")
+	answer_response = response.json()
+	assert response.status_code == HTTPStatus.NOT_FOUND, "Статус ответа не 404."
+	assert answer_response["detail"] == "submenu not found", "Сообщение об ошибке не соответствует ожидаемому"
 
 
 async def test_get_list_submenu_after_delete(ac: AsyncClient, id_menu: uuid.UUID):
@@ -98,15 +103,6 @@ async def test_get_list_submenu_after_delete(ac: AsyncClient, id_menu: uuid.UUID
 	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus")
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
 	assert response.json() == [], "Список подменю не пуст."
-
-
-async def test_get_submenu_by_id_after_remove(ac: AsyncClient, id_menu: uuid.UUID, saved_data: dict):
-	"""Проверка на получение подменю по id после его удаления."""
-	id_submenu = saved_data["submenu_id"]
-	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}")
-	answer_response = response.json()
-	assert response.status_code == HTTPStatus.NOT_FOUND, "Статус ответа не 404."
-	assert answer_response["detail"] == "submenu not found", "Сообщение об ошибке не соответствует ожидаемому"
 
 
 async def test_delete_menu_by_id(ac: AsyncClient, id_menu: uuid.UUID):
