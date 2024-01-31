@@ -75,22 +75,20 @@ async def test_scenario_get_submenu_by_id(ac: AsyncClient, id_menu: uuid.UUID, i
 		assert field in answer_response, f"В меню нет поля {field}."
 
 
-async def test_scenario_delete_submenu_by_id(ac: AsyncClient, id_menu: uuid.UUID,
-											 id_submenu: uuid.UUID, saved_data: dict):
+async def test_scenario_delete_submenu_by_id(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID):
 	"""Проверка на удаление подменю по id для сценария."""
 	response = await ac.delete(f"/api/v1/menus/{id_menu}/submenus/{id_submenu}")
 	answer_response = response.json()
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
 	assert answer_response["status"] == data_for_delete_submenu["status"], "Статус подменю не изменился"
 	assert answer_response["message"] == data_for_delete_submenu["message"], "Подменю не удалилось"
-	saved_data["submenu_id"] = id_submenu
 
 
 async def test_scenario_get_empty_list_submenu(ac: AsyncClient, id_menu: uuid.UUID):
 	"""Проверка на отсутствие существующих подменю для сценария."""
 	response = await ac.get(f"/api/v1/menus/{id_menu}/submenus")
 	assert response.status_code == HTTPStatus.OK, "Статус ответа не 200."
-	assert response.json() == [], "Список меню не пуст."
+	assert response.json() == [], "Список подменю не пуст."
 
 
 async def test_scenario_get_empty_list_dishes(ac: AsyncClient, id_menu: uuid.UUID, id_submenu: uuid.UUID):
